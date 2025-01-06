@@ -125,7 +125,7 @@ public class ApplicationService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public void createDefaultApplications() {
     String authService = "authorization-service";
-    String middlewareService = "baascore";
+    String middlewareService = "middleware";
     Application existing = applicationRepository.findByAppName(authService);
 
     if (existing == null) {

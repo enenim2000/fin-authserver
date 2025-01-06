@@ -75,13 +75,13 @@ public class CompanyService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createDefaultCompany() {
-        String companyCode = "GTI";
+        String companyCode = "WSTC";
         Company existing = companyRepository.findByCompanyCode(companyCode);
         if (existing == null) {
             Company newEntry = new Company();
             newEntry.setCompanyCode(companyCode);
-            newEntry.setCompanyAddress("4, Tinubu Street, Central Business District, Marina Lagos, Nigeria");
-            newEntry.setCompanyName("GTI Group");
+            newEntry.setCompanyAddress("Central Business District, Marina Lagos, Nigeria");
+            newEntry.setCompanyName("WSTC");
             newEntry.setCreatedBy("System");
             newEntry.setCreatedAt(new Date());
             newEntry.setStatus(EntityStatus.Enabled.name());
