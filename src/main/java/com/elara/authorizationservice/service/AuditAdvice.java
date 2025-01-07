@@ -41,8 +41,6 @@ public class AuditAdvice {
             skipAudit = skipAudit == null || skipAudit;
             skipAuthorization = skipAuthorization == null || skipAuthorization;
 
-            log.info("skipAudit: {}: ", skipAudit);
-            log.info("skipAuthorization: {}", skipAuthorization);
         }
 
         Object response = null;
@@ -58,20 +56,16 @@ public class AuditAdvice {
                 response = jp.proceed();
                 audit.setAfter(JsonConverter.getJsonRecursive(entity));
                 message = messageService.getMessage("create_authorization_message");
-                log.info("CrudOperation.Create.name(): entityAfter: {}", audit.getAfter());
             } else if (CrudOperation.Delete.name().equalsIgnoreCase(audit.getAction())) {
                 audit.setBefore(getEntityBefore(entity));
                 audit.setAfter(null);
                 response = entity;
                 message = messageService.getMessage("delete_authorization_message");
-                log.info("CrudOperation.Delete.name(): entityBefore: {}", audit.getBefore());
             } else if (CrudOperation.Update.name().equalsIgnoreCase(audit.getAction())) {
                 audit.setBefore(getEntityBefore(entity));
                 audit.setAfter(JsonConverter.getJsonRecursive(entity));
                 response = entity;
                 message = messageService.getMessage("update_authorization_message");
-                log.info("CrudOperation.Update.name(): entityBefore: {}", audit.getBefore());
-                log.info("CrudOperation.Update.name(): entityAfter: {}", audit.getAfter());
             }
 
             if (!skipAuthorization) {
@@ -83,13 +77,9 @@ public class AuditAdvice {
             auditOperation(entity, audit);
         }
 
-        log.info("************ callProceed **************: {}: response: {}, entity class: {}", callProceed, response, entity.getClass().getSimpleName());
-
         if (callProceed) {
-            log.info("Call proceed entered: className: {}", entity.getClass().getSimpleName());
             try {
                 response = jp.proceed();
-                log.info("response.getClass().getSimpleName(): {}", entity.getClass().getSimpleName());
                 String approvalItemType = messageService.getMessage(entity.getClass().getSimpleName());
                 if (CrudOperation.Update.name().equalsIgnoreCase(audit.getAction())) {
                     message = messageService.getMessage("update_message").replace("{0}", approvalItemType);
@@ -118,16 +108,11 @@ public class AuditAdvice {
         audit.setCreatedAt(new Date());
         audit.setCreatedBy(RequestUtil.getAuthToken().getEmail());
 
-        log.info("******Reaching ......");
-        log.info("******audit.isApprovalRequired() ......{}", audit.isApprovalRequired());
-        log.info("******audit.getUserType() ......{}", audit.getUserType());
-
         if (audit.isApprovalRequired() && (audit.getUserType() != null && !GroupType.Customer.name().equalsIgnoreCase(audit.getUserType()))) {
             Object emailList = ReflectionUtil.getFieldValue(metaModel.getClass(), "approvalMails", metaModel);
             Object smsList = ReflectionUtil.getFieldValue(metaModel.getClass(), "approvalSms", metaModel);
             Object approvalDependencies = ReflectionUtil.getFieldValue(metaModel.getClass(), "approvalDependencies", metaModel);
             String responseType = (String) ReflectionUtil.getFieldValue(metaModel.getClass(), "responseType", metaModel);
-            log.info("(JsonConverter.getJsonRecursive(emailList): {}", (JsonConverter.getJsonRecursive(emailList)));
             audit.setApprovalSms(JsonConverter.getJsonRecursive(smsList));
             audit.setApprovalEmail(JsonConverter.getJsonRecursive(emailList));
             audit.setApprovalDependency(JsonConverter.getJsonRecursive(approvalDependencies));

@@ -20,7 +20,6 @@ public class MessageService {
     }
 
     public String getMessage(String messageKey) {
-        log.info("MessageKey: {}", messageKey);
         return messageSource.getMessage(messageKey, null, getLocale());
     }
 
@@ -28,7 +27,6 @@ public class MessageService {
         try {
             String lang = RequestUtil.getAuthToken().getLang();
             if (lang == null || lang.trim().equals("")) {
-                log.info("Locale language: {}", Locale.getDefault().getLanguage());
                 lang = Locale.getDefault().getLanguage();
             }
 
@@ -36,7 +34,6 @@ public class MessageService {
                     .setLanguage(lang)
                     .build();
         } catch (Exception e) {
-            log.info("Possibly non-request i.e originating from cron job");
             return new Locale.Builder()
                     .setLanguage(Locale.getDefault().getLanguage())
                     .build();
